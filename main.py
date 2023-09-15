@@ -13,6 +13,7 @@ app = Flask(__name__)
 # CORS allow all origins
 CORS(app)
 
+
 class MailClient:
     def __init__(self):
         self.server = smtplib.SMTP(
@@ -50,7 +51,7 @@ ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS").spl
 
 @app.post("/<mail>")
 def send_mail(*args, **kwargs):
-    if not any([urlmatch(origin, request.origin) for origin in ALLOWED_ORIGINS]):
+    if not any([urlmatch(origin, request.origin, path_required=False) for origin in ALLOWED_ORIGINS]):
         return "Unauthorized", 401
 
     mail = kwargs.get("mail")
