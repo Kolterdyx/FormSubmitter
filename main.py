@@ -59,6 +59,11 @@ def send_mail(*args, **kwargs):
     return "OK", 200
 
 
+@app.get("/")
+def index():
+    return "<h1>FormSubmitter is running</h1>", 200
+
+
 if __name__ == "__main__":
     app.run(host=os.getenv("HOST"), port=int(os.getenv("PORT")))
     client.quit()
