@@ -3,11 +3,15 @@ from dotenv import load_dotenv
 import os
 import smtplib
 from email.message import EmailMessage
+
+from flask_cors import CORS
 from urlmatch import urlmatch
 
 load_dotenv()
 app = Flask(__name__)
 
+# CORS allow all origins
+CORS(app)
 
 class MailClient:
     def __init__(self):
