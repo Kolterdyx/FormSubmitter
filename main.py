@@ -41,12 +41,12 @@ class MailClient:
 client = MailClient()
 
 
-ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS").split(",")]
+ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS").split(",")]
 
 
 @app.post("/<mail>")
 def send_mail(*args, **kwargs):
-    if not any([urlmatch(host, request.host) for host in ALLOWED_HOSTS]):
+    if not any([urlmatch(origin, request.origin) for origin in ALLOWED_ORIGINS]):
         return "Unauthorized", 401
 
     mail = kwargs.get("mail")
