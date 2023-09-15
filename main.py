@@ -24,9 +24,9 @@ class MailClient:
         self.server.ehlo()
         self.server.login(os.getenv("MAIL_USERNAME"), os.getenv("MAIL_PASSWORD"))
 
-    def send_mail(self, mail, subject, reply_to, message):
+    def send_mail(self, mail, subject, reply_to, message, subtype="plain"):
         msg = EmailMessage()
-        msg.set_content(message)
+        msg.set_content(message, subtype=subtype)
         msg["Subject"] = subject
         msg["From"] = os.getenv("MAIL_USERNAME")
         msg["To"] = mail
@@ -57,10 +57,11 @@ def send_mail(*args, **kwargs):
     mail = kwargs.get("mail")
     subject = request.json.get("_subject")
     reply_to = request.json.get("_replyto")
+    subtype = request.json.get("_subtype")
     message = request.json.get("message")
     if mail is None or subject is None or reply_to is None or message is None:
         return "Missing arguments", 400
-    client.send_mail(mail, subject, reply_to, message)
+    client.send_mail(mail, subject, reply_to, message, subtype)
     return "OK", 200
 
 
