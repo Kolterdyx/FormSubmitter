@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 import smtplib
 from email.message import EmailMessage
-import re
+from urlmatch import urlmatch
 
 load_dotenv()
 app = Flask(__name__)
@@ -11,7 +11,9 @@ app = Flask(__name__)
 
 class MailClient:
     def __init__(self):
-        self.server = smtplib.SMTP(os.getenv("SMTP_SERVER"), int(os.getenv("SMTP_PORT")))
+        self.server = smtplib.SMTP(
+            os.getenv("SMTP_SERVER"), int(os.getenv("SMTP_PORT"))
+        )
         self.server.ehlo()
         self.server.starttls()
         self.server.ehlo()
@@ -30,19 +32,21 @@ class MailClient:
         self.server.quit()
 
     def __del__(self):
-        self.server.quit()
+        try:
+            self.quit()
+        except Exception:
+            pass
 
 
 client = MailClient()
 
 
-ALLOWED_HOSTS = [re.compile(host.strip()) for host in os.getenv("ALLOWED_HOSTS").split(",")]
+ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS").split(",")]
 
 
 @app.post("/<mail>")
 def send_mail(*args, **kwargs):
-    print(request.host)
-    if not any([host.match(request.host) for host in ALLOWED_HOSTS]):
+    if not any([urlmatch(host, request.host) for host in ALLOWED_HOSTS]):
         return "Unauthorized", 401
 
     mail = kwargs.get("mail")
@@ -52,9 +56,9 @@ def send_mail(*args, **kwargs):
     if mail is None or subject is None or reply_to is None or message is None:
         return "Missing arguments", 400
     client.send_mail(mail, subject, reply_to, message)
-    return 'OK', 200
+    return "OK", 200
 
 
 if __name__ == "__main__":
-    app.run(host=os.getenv('HOST'), port=int(os.getenv('PORT')))
+    app.run(host=os.getenv("HOST"), port=int(os.getenv("PORT")))
     client.quit()
