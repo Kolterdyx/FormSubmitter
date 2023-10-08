@@ -46,7 +46,7 @@ class MailClient:
 client = MailClient()
 
 
-ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS").split(",")]
+ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "").split(",")]
 
 
 @app.post("/<mail>")
@@ -71,5 +71,5 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(host=os.getenv("HOST"), port=int(os.getenv("PORT")))
+    app.run(host=os.getenv("HOST", "0.0.0.0"), port=int(os.getenv("PORT", "3753")))
     client.quit()

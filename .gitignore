@@ -1,3 +1,4 @@
 .env
 # Project exclude paths
 /venv/
+.dmypy.json
